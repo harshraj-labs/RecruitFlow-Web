@@ -1,0 +1,1 @@
+## Full stack internship application management dashboard built with React, Node.js, and PostgreSQL
