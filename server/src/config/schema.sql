@@ -38,3 +38,11 @@ CREATE TABLE IF NOT EXISTS applicants (
     reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+-- Batch files
+CREATE TABLE IF NOT EXISTS batch_file_uploads (
+    id SERIAL PRIMARY KEY,
+    batch_id INTEGER REFERENCES batches(id),
+    files_uploaded BOOLEAN DEFAULT FALSE,
+    files_count INTEGER DEFAULT 0,
+    uploaded_at TIMESTAMP
+);
