@@ -91,4 +91,89 @@ const getApplicants = async (req, res) => {
     }
 };
 
-module.exports = { getStats, getApplicants };
+const downloadCSV = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { type, batchId } = req.query;
+        // type = 'eligible' | 'not-eligible' | 'all'
+        // batchId = optional batch filter
+
+        // Build status filter
+        let statusCondition = '';
+        if (type === 'eligible') {
+            statusCondition = "AND a.status = 'Eligible'";
+        } else if (type === 'not-eligible') {
+            statusCondition = "AND a.status = 'Not Eligible'";
+        }
+
+        // Build batch filter
+        let batchCondition = '';
+        let params = [userId];
+
+        if (batchId) {
+            batchCondition = `AND b.id = $2`;
+            params.push(batchId);
+        }
+
+        // full query
+        const query = `
+            SELECT 
+                a.name,
+                a.email,
+                a.college,
+                a.degree,
+                a.year,
+                a.status,
+                a.reason,
+                a.has_resume,
+                a.has_id,
+                a.has_project,
+                b.name as batch_name
+            FROM applicants a
+            JOIN batches b ON a.batch_id = b.id
+            WHERE b.created_by = $1
+            ${batchCondition}
+            ${statusCondition}
+            ORDER BY a.status ASC, a.name ASC
+        `;
+
+        const result = await pool.query(query, params);
+        const applicants = result.rows;
+
+        // CSV content
+        let csvContent = 'Name,Email,College,Degree,Year,Status,Batch,Files Found,Reason\n';
+
+        applicants.forEach(a => {
+            // files found string
+            const files = [];
+            if (a.has_resume) files.push('Resume');
+            if (a.has_id) files.push('ID');
+            if (a.has_project) files.push('Project');
+            const filesFound = files.join(', ') || 'None';
+
+            // Escape commas in fields
+            const reason = (a.reason || '').replace(/"/g, '""');
+            const college = (a.college || '').replace(/"/g, '""');
+            const degree = (a.degree || '').replace(/"/g, '""');
+
+            csvContent += `${a.name},${a.email},"${college}","${degree}",${a.year},${a.status},${a.batch_name},"${filesFound}","${reason}"\n`;
+        });
+
+        // Set filename based on type
+        const filename =
+            type === 'eligible' ? 'eligible_applicants.csv' :
+            type === 'not-eligible' ? 'rejected_applicants.csv' :
+            'all_applicants.csv';
+
+        // Trigger file download in browser
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.send(csvContent);
+
+    } catch (error) {
+        console.error('Download CSV error:', error);
+        res.status(500).json({ error: 'Failed to generate CSV' });
+    }
+};
+
+module.exports = { getStats, getApplicants, downloadCSV };

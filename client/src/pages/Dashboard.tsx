@@ -9,6 +9,7 @@ import { dashboardService, batchService } from '../services/api';
 import type { Batch, Applicant, DashboardStats } from '../types';
 
 function Dashboard() {
+    
     // State
     const [batches, setBatches] = useState<Batch[]>([]);
     const [selectedBatchId, setSelectedBatchId] = useState<number | null>(null);
@@ -18,6 +19,7 @@ function Dashboard() {
     const [applicants, setApplicants] = useState<Applicant[]>([]);
     const [loading, setLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    
 
     // Fetch batches list
     const fetchBatches = async () => {
@@ -179,7 +181,7 @@ function Dashboard() {
                     </div>
 
                     {/* Applicants Table */}
-                    <ApplicantsTable applicants={applicants} />
+                    <ApplicantsTable applicants={applicants} selectedBatchId={selectedBatchId} selectedBatchName={selectedBatchName} />
                 </div>
             </div>
 
