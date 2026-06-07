@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getStats, getApplicants, downloadCSV } = require('../controllers/dashboardController');
+const { getStats, getApplicants, downloadCSV } = require('../controllers/DashboardController');
 const { protect } = require('../middleware/authMiddleware');
 
 router.get('/stats', protect, getStats);
