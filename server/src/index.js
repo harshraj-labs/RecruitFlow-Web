@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const initDB = require('./config/init-db');
 
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/DashboardRoutes');
@@ -28,11 +29,15 @@ app.get('/', (req, res) => {
     res.json({ message: 'RecruitFlow API is running!' });
 });
 
-app.listen(PORT, () => {
-    console.log(`\n================================`);
-    console.log(`  RecruitFlow API`);
-    console.log(`================================`);
-    console.log(`Server running on port ${PORT}`);
-    console.log(`URL: http://localhost:${PORT}`);
-    console.log(`================================\n`);
-});
+const startServer = async () => {
+    await initDB();
+    app.listen(PORT, () => {
+        console.log(`\n================================`);
+        console.log(`  RecruitFlow API`);
+        console.log(`================================`);
+        console.log(` Server running on port ${PORT}`);
+        console.log(`================================\n`);
+    });
+};
+
+startServer();
