@@ -6,4 +6,5 @@
 ~~Phase 4: Validation Logic  → Port from C to JS~~
 ~~Phase 5: Results Display   → Tables, charts~~
 ~~Phase 6: Reports           → Download CSV~~
-Phase 7: Deployment        → Live URL
+~~Phase 7: Deployment        → Live URL~~
+Phase 8: Readme              → Project Brief
