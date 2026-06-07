@@ -6,6 +6,8 @@ interface DownloadDropdownProps {
     selectedBatchName: string | null;
 }
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 function DownloadDropdown({ selectedBatchId, selectedBatchName }: DownloadDropdownProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [scope, setScope] = useState<'batch' | 'all'>(
@@ -31,8 +33,8 @@ function DownloadDropdown({ selectedBatchId, selectedBatchName }: DownloadDropdo
 
     const handleDownload = async (type: 'eligible' | 'not-eligible' | 'all') => {
         try {
-            // Build URL
-            let url = `http://localhost:5000/api/dashboard/download?type=${type}`;
+            
+            let url = `${BASE_URL}/dashboard/download?type=${type}`;
 
             // Add batchId if scope is batch AND a batch is selected
             if (scope === 'batch' && selectedBatchId) {
